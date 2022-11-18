@@ -8,11 +8,15 @@ ExitProcess PROTO, dwExitCode:DWORD
 s1 DB 'eebus', 0
 s2 DB 'beebus', 0
 s3 DB 'deebus', 0
-string_array DD s1, s2, s3
+s4 DB 'zzzzz', 0
+s5 DB 'yyyyy', 0
+s6 DB 'ssssss', 0
+s7 DB 'ttttttttt', 0
+string_array DD s1, s2, s3, s4, s5, s6, s7
 array_size DWORD 0
-stringorder WORD 0
+stringorder DWORD 0
 tmpcount WORD 0
-index WORD 0
+index DWORD 0
 
 .code
 shlcl4 MACRO num
@@ -21,7 +25,7 @@ shlcl4 MACRO num
 	MOV cx, num
 ENDM
 
-main PROC
+main PROC ; This will work with up to 4 strings, in order to work with more, "index" would need to be a DWORD
 	XOR eax, eax
 	MOV al, -4
 
@@ -68,8 +72,8 @@ main PROC
 
 	_end_loop:
 
-	MOVZX cx, al
-	MOV index, cx
+	MOVZX ecx, al
+	MOV index, ecx
 	MOV cl, 2
 	SHR index, cl
 	INC index
@@ -87,8 +91,8 @@ main PROC
 
 	_end_shift_loop:
 
-	MOV cx, index
-	OR stringorder, cx
+	MOV ecx, index
+	OR stringorder, ecx
 
 	CMP al, SIZEOF string_array - 4
 	JGE _end
@@ -97,7 +101,7 @@ main PROC
 	_end:
 	
 	XOR eax, eax
-	MOVZX eax, stringorder
+	MOV eax, stringorder
 
 	INVOKE ExitProcess, 0
 main ENDP
