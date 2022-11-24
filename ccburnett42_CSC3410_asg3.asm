@@ -32,13 +32,13 @@ main PROC ; This will work with up to 8 strings, in order to do more you would n
 	MOV       al, -4				;-4 because initial loop will add 4, making start 0
 
 	_sort_loop:
-	ADD	      al, 4
-	MOV	      ah, 0
-	XOR	      ecx, ecx
+	ADD       al, 4
+	MOV       ah, 0
+	XOR       ecx, ecx
 
 	_inner_loop:
-	CMP	      ah, SIZEOF string_array
-	JGE	      _end_loop
+	CMP       ah, SIZEOF string_array
+	JGE       _end_loop
 
 	PUSH      eax					; save counters
 	PUSH      ecx
@@ -46,65 +46,65 @@ main PROC ; This will work with up to 8 strings, in order to do more you would n
 	LEA       esi, string_array
 
 	MOVZX     ebx, al				; push outer string
-	ADD	      ebx, esi
-	MOV	      ebx, [ebx]
+	ADD       ebx, esi
+	MOV       ebx, [ebx]
 	PUSH      ebx
 
 	MOVZX     ebx, ah				; push inner string
-	ADD	      ebx, esi
-	MOV	      ebx, [ebx]
+	ADD       ebx, esi
+	MOV       ebx, [ebx]
 	PUSH      ebx
 
 	CALL      a_cmpsb				; proc, esi = alphabetically first, edi = alphabetically second
-	POP	      ecx					; restore counters after proc call
-	POP	      eax
+	POP       ecx					; restore counters after proc call
+	POP       eax
 
 	MOVZX     edi, al				; overwrite edi (not needed) with reference to outer loop string
-	LEA	      ebx, string_array
-	ADD	      edi, ebx
-	MOV	      edi, [edi]
+	LEA       ebx, string_array
+	ADD       edi, ebx
+	MOV       edi, [edi]
 
-	CMP	      edi, esi			; if outer loop string was the alphabetically first one, inc, otherwise do not
-	JNE	      _lesser
+	CMP       edi, esi			; if outer loop string was the alphabetically first one, inc, otherwise do not
+	JNE       _lesser
 
-	INC	      ch					; inc count, inc inner loop
-	ADD	      ah, 4
-	JMP	      _inner_loop
+	INC       ch					; inc count, inc inner loop
+	ADD       ah, 4
+	JMP       _inner_loop
 
 	_lesser:
 
-	ADD	      ah, 4				; or just inc inner loop
-	JMP	      _inner_loop
+	ADD       ah, 4				; or just inc inner loop
+	JMP       _inner_loop
 
 	_end_loop:
 
 	MOVZX     ebx, al				; get outer loop index (in multiple of 4)
-	MOV	      cl, 2
-	SHR	      ebx, cl				; divide by 4 for true index
-	INC	      ebx					; inc for 1-indexed index
+	MOV       cl, 2
+	SHR       ebx, cl				; divide by 4 for true index
+	INC       ebx					; inc for 1-indexed index
 
-	DEC	      ch					; dec count due to strings self-comparing
-	MOV	      cl, 4				; binary left shift of 4 moves hex digit left one space
+	DEC       ch					; dec count due to strings self-comparing
+	MOV       cl, 4				; binary left shift of 4 moves hex digit left one space
 
 	_shift_loop:				; shift index in ebx left an amount of times equal to the alphabetically-first count - 1
-	CMP	      ch, 0				; ch contains amount of shifts
-	JLE	      _end_shift_loop
+	CMP       ch, 0				; ch contains amount of shifts
+	JLE       _end_shift_loop
 
-	SHL	      ebx, cl
-	DEC	      ch
-	JMP	      _shift_loop
+	SHL       ebx, cl
+	DEC       ch
+	JMP       _shift_loop
 	_end_shift_loop:
 
-	OR	      stringorder, ebx	; add that shifted output onto the output number with OR
+	OR        stringorder, ebx	; add that shifted output onto the output number with OR
 
-	CMP	      al, SIZEOF string_array - 4
-	JGE	      _end
-	JMP	      _sort_loop			; loop or end
+	CMP       al, SIZEOF string_array - 4
+	JGE       _end
+	JMP       _sort_loop			; loop or end
 
 	_end:
 	
-	XOR	      eax, eax
-	MOV	      eax, stringorder
+	XOR       eax, eax
+	MOV       eax, stringorder
 
 	INVOKE	ExitProcess, 0
 main ENDP
