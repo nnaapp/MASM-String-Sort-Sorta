@@ -106,28 +106,6 @@ main PROC ; This will work with up to 4 strings, in order to work with more, "in
 	INVOKE ExitProcess, 0
 main ENDP
 
-strlen PROC ; after ret, ESI contains string length, KEEP IT TO 255 OR LESS FOR BYTE SIZE! Store offset value in AH
-	PUSH ebp
-	MOV ebp, esp
-	PUSH eax
-	MOV esi, [ebp + 12] ; string ptr
-	MOV eax, [ebp + 8]  ; offset
-	AND eax, 00000000000000001111111100000000b
-	SHR eax, 8
-	ADD esi, eax
-	DEC esi
-
-	_loop:
-	INC esi
-	CMP BYTE PTR [esi], 0
-	JNE _loop
-	
-	SUB esi, [esp]
-	POP eax
-	POP ebp
-	ret 8
-strlen ENDP
-
 a_cmpsb PROC ; after ret, ebx contains first string adr, edx contains second string adr, alphabetically
 	PUSH ebp
 	MOV ebp, esp
