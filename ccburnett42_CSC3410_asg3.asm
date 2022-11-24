@@ -15,8 +15,6 @@ s7 DB 'ttttttttt', 0
 string_array DD s1, s2, s3, s4, s5, s6, s7
 array_size DWORD 0
 stringorder DWORD 0
-tmpcount WORD 0
-index DWORD 0
 
 .code
 shlcl4 MACRO num
@@ -27,7 +25,7 @@ ENDM
 
 ; eax : keeps loop indexes
 ; ebx : scratch register
-; ecx : used for shifts
+; ecx : cl for shift, ch for outer string count
 ; edx : 
 ; esi : alphabetically first output from proc
 ; edi : alphabeticallt second output from proc, overwritten with address of outer loop string
@@ -40,13 +38,14 @@ main PROC ; This will work with up to 4 strings, in order to work with more, "in
 	_sort_loop:
 	ADD		al, 4                   ;al is outer string
 	MOV		ah, 0                   ;ah is inner string
-	MOV		tmpcount, 0             ;this counts the times the outer string comes before an inner string
+	XOR		ecx, ecx                ;this counts the times the outer string comes before an inner string
 
 	_inner_loop:
 	CMP		ah, SIZEOF string_array ;if inner string is final string, end
 	JGE		_end_loop
 
 	PUSH	eax
+	PUSH	ecx
 
 	LEA		esi, string_array
 	xor		ebx, ebx ; About to use to push addresses
@@ -62,6 +61,7 @@ main PROC ; This will work with up to 4 strings, in order to work with more, "in
 	PUSH	ebx
 
 	CALL	a_cmpsb
+	POP		ecx
 	POP		eax
 
 	xor		ebx, ebx ; About to use to get outer loop string address
@@ -74,7 +74,7 @@ main PROC ; This will work with up to 4 strings, in order to work with more, "in
 	CMP		edi, esi
 	JNE		_lesser
 
-	INC		tmpcount
+	INC		ch
 	ADD		ah, 4
 	JMP		_inner_loop
 
@@ -85,27 +85,24 @@ main PROC ; This will work with up to 4 strings, in order to work with more, "in
 
 	_end_loop:
 
-	MOVZX	ecx, al
-	MOV		index, ecx
+	MOVZX	ebx, al
 	MOV		cl, 2
-	SHR		index, cl
-	INC		index
+	SHR		ebx, cl
+	INC		ebx
 
-	DEC		tmpcount
-	MOV		ch, BYTE PTR[tmpcount]
+	DEC		ch
 	MOV		cl, 4
 	_shift_loop:
 	CMP		ch, 0
 	JLE		_end_shift_loop
 
-	SHL		index, cl
+	SHL		ebx, cl
 	DEC		ch
 	JMP		_shift_loop
 
 	_end_shift_loop:
 
-	MOV		ecx, index
-	OR		stringorder, ecx
+	OR		stringorder, ebx
 
 	CMP		al, SIZEOF string_array - 4
 	JGE		_end
