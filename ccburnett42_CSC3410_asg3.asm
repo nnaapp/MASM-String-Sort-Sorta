@@ -128,7 +128,7 @@ a_cmpsb PROC ; takes two string addresses as input, outputs alphabetically first
 	CMP		ecx, ebx
 	JGE		_first_greater
 
-	MOV ecx, ebx					; swap ebx into ecx if the second string is greater in length
+	MOV		ecx, ebx					; swap ebx into ecx if the second string is greater in length
 
 	_first_greater:
 
