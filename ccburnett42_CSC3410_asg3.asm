@@ -28,11 +28,11 @@ stringorder DWORD 0
 ;       for comparison purposes, as the second string is not needed
 
 main PROC ; This will work with up to 8 strings, in order to do more you would need a better way or a 64 bit system
-	XOR		eax, eax
-	MOV		al, -4                  ;-4 because initial loop will add 4, making start 0
+	XOR     eax, eax
+	MOV     al, -4				;-4 because initial loop will add 4, making start 0
 
 	_sort_loop:
-	ADD		al, 4
+	ADD     al, 4
 	MOV		ah, 0
 	XOR		ecx, ecx
 
