@@ -110,73 +110,73 @@ main PROC ; This will work with up to 8 strings, in order to do more you would n
 main ENDP
 
 a_cmpsb PROC ; takes two string addresses as input, outputs alphabetically first string in esi, second in edi
-	PUSH	  ebp						; establish stack frame
-	MOV		  ebp, esp
+	PUSH      ebp						; establish stack frame
+	MOV       ebp, esp
 
-	MOV		  esi, [ebp + 12]			; first string
-	MOV		  edi, [ebp + 8]			; second string
-	PUSH	  esi
-	PUSH	  edi
+	MOV       esi, [ebp + 12]			; first string
+	MOV       edi, [ebp + 8]			; second string
+	PUSH      esi
+	PUSH      edi
 
-	PUSH	  esi						; getting string length for REPE loop below
-	CALL	  strlen					; get length of first string in ecx
-	MOV		  ecx, ebx
+	PUSH      esi						; getting string length for REPE loop below
+	CALL      strlen					; get length of first string in ecx
+	MOV       ecx, ebx
 
-	PUSH	  edi
-	CALL	  strlen					; get length of second string in ebx
+	PUSH      edi
+	CALL      strlen					; get length of second string in ebx
 
-	CMP		  ecx, ebx
-	JGE		  _first_greater
+	CMP       ecx, ebx
+	JGE       _first_greater
 
-	MOV		  ecx, ebx					; swap ebx into ecx if the second string is greater in length
+	MOV       ecx, ebx					; swap ebx into ecx if the second string is greater in length
 
 	_first_greater:
 
 	CLD								; CLD to ensure it increments forward
-	REPE	  CMPSB					; compare ecx times, or until different
-	JECXZ	  _equal					; if it makes it to the end, they are equal
+	REPE      CMPSB					; compare ecx times, or until different
+	JECXZ     _equal					; if it makes it to the end, they are equal
 
-	MOV		  bl, BYTE PTR [esi - 1]	; get char that was different from both strings
-	MOV		  dl, BYTE PTR [edi - 1]	; subtract 1 from address due to how repe cmpsb works
+	MOV       bl, BYTE PTR [esi - 1]	; get char that was different from both strings
+	MOV       dl, BYTE PTR [edi - 1]	; subtract 1 from address due to how repe cmpsb works
 
-	CMP		  bl, dl					; if bl > dl, first string comes after second string
-	JL		  _less					; if bl < dl, first string comes before second string
+	CMP       bl, dl					; if bl > dl, first string comes after second string
+	JL        _less					; if bl < dl, first string comes before second string
 
-	POP		  esi						; first string in first out
-	POP		  edi						; second string in second out
-	JMP		  _end
+	POP       esi						; first string in first out
+	POP       edi						; second string in second out
+	JMP       _end
 
 	_less:
-	POP		  edi						; second string in first out
-	POP		  esi						; first string in second out
-	JMP		  _end
+	POP       edi						; second string in first out
+	POP       esi						; first string in second out
+	JMP       _end
 
 	_equal:
-	POP		  esi						; order irrelevant, they are equal
-	POP		  edi
+	POP       esi						; order irrelevant, they are equal
+	POP       edi
 
 	_end:
 
-	POP		  ebp						; restore stack
-	RET		  8
+	POP       ebp						; restore stack
+	RET       8
 a_cmpsb ENDP
 
 strlen PROC	; takes string address as input, preserves esi, and outputs string length in ebx
-	PUSH	  ebp						; establish stack frame
-	MOV		  ebp, esp
-	PUSH	  esi						; preserve esi
-	MOV		  esi, [ebp + 8]			; get string ptr in esi
+	PUSH      ebp						; establish stack frame
+	MOV       ebp, esp
+	PUSH      esi						; preserve esi
+	MOV       esi, [ebp + 8]			; get string ptr in esi
 
 	_loop:							; iterate over string, incrementing address 1 byte each time
-	INC		  esi
-	CMP		  BYTE PTR [esi], 0		; if char is equal to 0, null terminator, string over
-	JNE		  _loop
+	INC       esi
+	CMP       BYTE PTR [esi], 0		; if char is equal to 0, null terminator, string over
+	JNE       _loop
 	
-	SUB		  esi, [ebp + 8]			; subtract string start address from current esi address for string size
-	MOV		  ebx, esi				; put in ebx for output
-	POP		  esi
-	POP		  ebp						; restore stack
-	RET		  4
+	SUB       esi, [ebp + 8]			; subtract string start address from current esi address for string size
+	MOV       ebx, esi				; put in ebx for output
+	POP       esi
+	POP       ebp						; restore stack
+	RET       4
 strlen ENDP
 
 END main
