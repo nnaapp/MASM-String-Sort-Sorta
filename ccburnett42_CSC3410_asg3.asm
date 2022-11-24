@@ -32,7 +32,7 @@ main PROC ; This will work with up to 8 strings, in order to do more you would n
 	MOV     al, -4				;-4 because initial loop will add 4, making start 0
 
 	_sort_loop:
-	ADD     al, 4
+	ADD		al, 4
 	MOV		ah, 0
 	XOR		ecx, ecx
 
