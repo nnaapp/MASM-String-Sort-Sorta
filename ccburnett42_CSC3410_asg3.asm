@@ -35,6 +35,25 @@ pushs_off MACRO off                     ; push string to stack with offset arg, 
 ENDM
 
 main PROC ; This will work with up to 8 strings, in order to do more you would need a better way or a 64 bit system
+    XOR       eax, eax
+    MOV       al, -4                    ; array index offset
+    MOV       ecx, LENGTHOF string_array; this is for loop count
+    LEA       esi, string_array
+    _pre_loop:                          ; pre-processing loop for converting every string to uppercase
+    CMP       ecx, 0                    ; this is done before to eliminate repeated work in the sort algorithm
+    JLE       _end_pre
+
+    ADD       al, 4
+    pushs_off al                        ; pushs string from array with al as index offset
+    CALL      toUpper
+
+    DEC       ecx                       ; dec and loop until done
+    JMP       _pre_loop
+
+    _end_pre:
+
+
+
 	XOR       eax, eax
 	MOV       al, -4                    ;-4 because initial loop will add 4, making start 0
 
@@ -51,11 +70,6 @@ main PROC ; This will work with up to 8 strings, in order to do more you would n
 	PUSH      ecx
 
 	LEA       esi, string_array
-
-	pushs_off al                        ; push outer string
-    CALL      toUpper                   ; convert outer to uppercase if not already
-	pushs_off ah                        ; push inner string
-    CALL      toUpper                   ; convert inner to uppercase if not already
 
     pushs_off al                        ; push outer string
     pushs_off ah                        ; push inner string
