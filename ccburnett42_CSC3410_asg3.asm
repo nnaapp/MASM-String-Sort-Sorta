@@ -152,7 +152,7 @@ a_cmpsb PROC                            ; takes two string addresses as input, o
 
 	CLD                                 ; CLD to ensure it increments forward
 	REPE      CMPSB                     ; compare ecx times, or until different
-	JBE     _less_equal                    ; if it makes it to the end, they are equal
+	JBE     _less_equal                 ; if it makes it to the end, they are equal
 
 	POP       esi                       ; first string in first out
 	POP       edi                       ; second string in second out
