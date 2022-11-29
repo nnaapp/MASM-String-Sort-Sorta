@@ -5,14 +5,14 @@
 ExitProcess PROTO, dwExitCode:DWORD
 
 .data
-s1 DB 'eebus', 0
-s2 DB 'beebus', 0
-s3 DB 'deebus', 0
+s1 DB 'aaaaaa', 0
+s2 DB 'cccccc', 0
+s3 DB 'bbbbbb', 0
 s4 DB 'zzzzz', 0
-s5 DB 'yyyyy', 0
+s5 DB 'ddddd', 0
 s6 DB 'ssssss', 0
 s7 DB 'ttttttttt', 0
-s8 DB 'argatgagae', 0
+s8 DB 'eeeee', 0
 string_array DD s1, s2, s3, s4, s5, s6, s7, s8
 array_size DWORD 0
 stringorder DWORD 0
@@ -152,26 +152,15 @@ a_cmpsb PROC                            ; takes two string addresses as input, o
 
 	CLD                                 ; CLD to ensure it increments forward
 	REPE      CMPSB                     ; compare ecx times, or until different
-	JECXZ     _equal                    ; if it makes it to the end, they are equal
-
-	MOV       bl, BYTE PTR [esi - 1]    ; get char that was different from both strings
-	MOV       dl, BYTE PTR [edi - 1]    ; subtract 1 from address due to how repe cmpsb works
-
-	CMP       bl, dl                    ; if bl > dl, first string comes after second string
-	JL        _less                     ; if bl < dl, first string comes before second string
+	JBE     _less_equal                    ; if it makes it to the end, they are equal
 
 	POP       esi                       ; first string in first out
 	POP       edi                       ; second string in second out
 	JMP       _end
 
-	_less:
+	_less_equal:
 	POP       edi                       ; second string in first out
 	POP       esi                       ; first string in second out
-	JMP       _end
-
-	_equal:
-	POP       esi                       ; order irrelevant, they are equal
-	POP       edi
 
 	_end:
 
