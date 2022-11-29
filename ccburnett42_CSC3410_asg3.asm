@@ -27,6 +27,13 @@ stringorder DWORD 0
 ; edi : alphabeticallt second output from proc, overwritten with address of outer loop string
 ;       for comparison purposes, as the second string is not needed
 
+pushs_off MACRO off                     ; push string to stack with offset arg
+    MOVZX     ebx, off
+	ADD       ebx, esi
+	MOV       ebx, [ebx]
+	PUSH      ebx
+ENDM
+
 main PROC ; This will work with up to 8 strings, in order to do more you would need a better way or a 64 bit system
 	XOR       eax, eax
 	MOV       al, -4                    ;-4 because initial loop will add 4, making start 0
@@ -45,16 +52,13 @@ main PROC ; This will work with up to 8 strings, in order to do more you would n
 
 	LEA       esi, string_array
 
-	MOVZX     ebx, al                   ; push outer string
-	ADD       ebx, esi
-	MOV       ebx, [ebx]
-	PUSH      ebx
+	pushs_off al                        ; push outer string
+    CALL      toUpper
+	pushs_off ah                        ; push inner string
+    CALL      toUpper
 
-	MOVZX     ebx, ah                   ; push inner string
-	ADD       ebx, esi
-	MOV       ebx, [ebx]
-	PUSH      ebx
-
+    pushs_off al
+    pushs_off ah
 	CALL      a_cmpsb                   ; proc, esi = alphabetically first, edi = alphabetically second
 	POP       ecx                       ; restore counters after proc call
 	POP       eax
@@ -178,5 +182,41 @@ strlen PROC	                            ; takes string address as input, preserv
 	POP       ebp                       ; restore stack
 	RET       4
 strlen ENDP
+
+toUpper PROC
+    PUSH      ebp
+    MOV       ebp, esp
+    PUSH      esi
+    PUSH      edi
+    PUSH      eax
+    MOV       esi, [ebp + 8]
+    MOV       edi, [ebp + 8]
+
+    _loop:
+    CMP       BYTE PTR [esi], 0
+    JE        _loop_break
+
+    XOR       eax, eax
+    LODSB
+
+    CMP       eax, 97
+    JL        _loop_end
+
+    SUB       eax, 32
+
+    _loop_end:
+
+    STOSB
+
+    JMP       _loop
+
+    _loop_break:
+
+    POP       eax
+    POP       edi
+    POP       esi
+    POP       ebp
+    RET       4
+toUpper ENDP
 
 END main
