@@ -27,10 +27,10 @@ stringorder DWORD 0
 ; edi : alphabeticallt second output from proc, overwritten with address of outer loop string
 ;       for comparison purposes, as the second string is not needed
 
-pushs_off MACRO off                     ; push string to stack with offset arg
+pushs_off MACRO off                     ; push string to stack with offset arg, typically al/ah here
     MOVZX     ebx, off
 	ADD       ebx, esi
-	MOV       ebx, [ebx]
+	MOV       ebx, [ebx]                ; this is due to the array of strings, must "follow the pointers"
 	PUSH      ebx
 ENDM
 
@@ -53,12 +53,12 @@ main PROC ; This will work with up to 8 strings, in order to do more you would n
 	LEA       esi, string_array
 
 	pushs_off al                        ; push outer string
-    CALL      toUpper
+    CALL      toUpper                   ; convert outer to uppercase if not already
 	pushs_off ah                        ; push inner string
-    CALL      toUpper
+    CALL      toUpper                   ; convert inner to uppercase if not already
 
-    pushs_off al
-    pushs_off ah
+    pushs_off al                        ; push outer string
+    pushs_off ah                        ; push inner string
 	CALL      a_cmpsb                   ; proc, esi = alphabetically first, edi = alphabetically second
 	POP       ecx                       ; restore counters after proc call
 	POP       eax
@@ -110,7 +110,7 @@ main PROC ; This will work with up to 8 strings, in order to do more you would n
 	XOR       eax, eax
 	MOV       eax, stringorder
 
-	INVOKE	ExitProcess, 0
+    	INVOKE	ExitProcess, 0
 main ENDP
 
 a_cmpsb PROC                            ; takes two string addresses as input, outputs alphabetically first string in esi, second in edi
@@ -183,36 +183,36 @@ strlen PROC	                            ; takes string address as input, preserv
 	RET       4
 strlen ENDP
 
-toUpper PROC
-    PUSH      ebp
+toUpper PROC                            ; takes string address as input, turns each char to uppercase if lowercase, this is by reference
+    PUSH      ebp                       ; WILL EXHIBIT UNEXPECTED BEHAVIOR IF GIVIEN NON-ALPHABETICAL CHARACTERS ABOVE 97 DEC ASCII
     MOV       ebp, esp
-    PUSH      esi
+    PUSH      esi                       ; preserve registers used in this operation
     PUSH      edi
     PUSH      eax
-    MOV       esi, [ebp + 8]
+    MOV       esi, [ebp + 8]            ; load string into esi and edi
     MOV       edi, [ebp + 8]
 
-    _loop:
+    _loop:                              ; iterates over every character until null terminator
     CMP       BYTE PTR [esi], 0
     JE        _loop_break
 
     XOR       eax, eax
-    LODSB
+    LODSB                               ; load current char
 
-    CMP       eax, 97
+    CMP       eax, 97                   ; if less than 97, not lowercase, jump
     JL        _loop_end
 
-    SUB       eax, 32
-
+    SUB       eax, 32                   ; lowercase char, subtract 32 to convert to uppercase
+        
     _loop_end:
 
-    STOSB
+    STOSB                               ; store processed char where it came from
 
     JMP       _loop
 
     _loop_break:
 
-    POP       eax
+    POP       eax                       ; restore registers
     POP       edi
     POP       esi
     POP       ebp
