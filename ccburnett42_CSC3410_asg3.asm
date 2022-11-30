@@ -124,7 +124,7 @@ main PROC ; This will work with up to 8 strings, in order to do more you would n
 	XOR       eax, eax
 	MOV       eax, stringorder
 
-    	INVOKE	ExitProcess, 0
+    INVOKE    ExitProcess, 0
 main ENDP
 
 a_cmpsb PROC                            ; takes two string addresses as input, outputs alphabetically first string in esi, second in edi
