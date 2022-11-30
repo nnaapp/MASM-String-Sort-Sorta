@@ -201,14 +201,7 @@ toUpper PROC                            ; takes string address as input, turns e
 
     XOR       eax, eax
     LODSB                               ; load current char
-
-    CMP       eax, 97                   ; if less than 97, not lowercase, jump
-    JL        _loop_end
-
-    SUB       eax, 32                   ; lowercase char, subtract 32 to convert to uppercase
-        
-    _loop_end:
-
+    AND eax, 11011111b                  ; unset 6th bit, which denotes upper or lower case
     STOSB                               ; store processed char where it came from
 
     JMP       _loop
