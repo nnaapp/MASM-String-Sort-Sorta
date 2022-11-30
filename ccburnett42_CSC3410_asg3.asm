@@ -201,7 +201,7 @@ toUpper PROC                            ; takes string address as input, turns e
 
     XOR       eax, eax
     LODSB                               ; load current char
-    AND eax, 11011111b                  ; unset 6th bit, which denotes upper or lower case
+    AND       eax, 11011111b                  ; unset 6th bit, which denotes upper or lower case
     STOSB                               ; store processed char where it came from
 
     JMP       _loop
