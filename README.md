@@ -5,7 +5,10 @@ Output had to be a hex integer formatted like 0x3421, where 1, 2, 3, and 4 (and 
 
 # Ex:
 s1 = "BBB"
+
 s2 = "CCC"
+
 s3 = "AAA"
+
 
 Output - 0x312
